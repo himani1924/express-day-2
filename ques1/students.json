@@ -1,0 +1,20 @@
+[
+    {
+      "username": "neha",
+      "class": 12,
+      "rollno": 10,
+      "branch": "medical"
+    },
+    {
+        "username": "sakshi",
+        "class": 12,
+        "rollno": 11,
+        "branch": "commerce"
+        },
+        {
+        "username": "simran",
+        "class": 12,
+        "rollno": 12,
+        "branch": "medical"
+    }
+  ]
