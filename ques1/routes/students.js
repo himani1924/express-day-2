@@ -36,5 +36,3 @@ router.post("/delete/:rollno", (req, res) => {
 
 
 module.exports = router;
-
-

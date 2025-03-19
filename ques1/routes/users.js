@@ -1,67 +1,84 @@
 var express = require('express');
 var router = express.Router();
+const fs = require("fs");
+const path = require("path");
+const addCreatedOn = require("../middleware/createdOn");
+const USER_FILE = path.join(__dirname, "../users.json");
+const MYUSER_FILE = path.join(__dirname, "../myuser.json");
 
-let users = []
-// for get request
-router.get('/', (req, res)=> {
-  res.json(users);
+const readUsers = () => {
+    const data = fs.readFileSync(USER_FILE);
+    return JSON.parse(data);
+};
+const readMyUsers = () => {
+    const data = fs.readFileSync(MYUSER_FILE);
+    return JSON.parse(data);
+};
+
+router.get("/", (req, res) => {
+    res.json(readUsers());
 });
 
-// for post request
-router.post('/',(req, res) =>{
+const writeUsers = (users) => {
+    fs.writeFileSync(USER_FILE, JSON.stringify(users, null, 2));
+};
 
-  console.log('inside post request');
-  const {username, password, firstname, lastname} = req.body;
-  if(!username || !password || !firstname || !lastname){
-    res.status(400).json({error: 'Invalid input'});
-  }
-  const newUser = {
-    id: Date.now().toString(),
-    username,
-    password,
-    firstname,
-    lastname
-  }
-  users.push(newUser);
-  res.status(201).json(newUser);
-})
+router.get("/home", (req, res) => {
+    res.render("home", { users: readUsers() });
+});
 
-// for put request
-router.put('/:id', (req, res)=>{
-  const { username, password, firstName, lastName } = req.body;
-  const userIndex = users.findIndex(u => u.id === parseInt(req.params.id));
-  
-  if (userIndex === -1) {
-    return res.status(404).json({ error: 'User not found' });
-  }
+router.get("/add", (req, res) => {
+    res.render("adduser");
+});
 
-  users[userIndex] = {
-    ...users[userIndex],
-    username,
-    password,
-    firstName,
-    lastName,
-  };
+router.get("/about", (req, res) => {
+    const users = readUsers();
+    res.render("about", { users });
+});
 
-  res.json(users[userIndex]);
-})
+router.post("/adduser", addCreatedOn, (req, res) => {
+    let users = readUsers();
+    const { id, username, email, created_on } = req.body;
 
-// delete req
-router.delete('/:id', (req, res)=>{
-  const {id} = req.params;
-  const user = users.find(user => user.id === id);
-  if(!user){
-    res.status(404).json({error: 'User not found'});
-  }
-  users = users.filter(user => user.id !== id);
-  res.status(204).send();
-})
+    const newUser = { id, username, email, created_on };
+    users.push(newUser);
+    writeUsers(users);
 
-router.get('/search', (req, res)=>{
-  const username = req.query.q || '';
-  const filteredUsers = users.filter(user => user.username.includes(username));
-  console.log('filteredusers - ', filteredUsers);
-  res.json(filteredUsers);
-})
+    console.log("User added:", newUser);
+
+    
+    res.redirect("/users/home");
+});
+
+
+router.post("/delete/:id", (req, res) => {
+    var users = readUsers();
+    const idToDelete = parseInt(req.params.id);
+    users = users.filter(user => user.id !== idToDelete);
+    writeUsers(users);
+    res.redirect("/users/home");
+});
+
+
+// router.get('/search', (req, res) => {
+//     const query = req.query.q ? req.query.q.toLowerCase() : "";
+//     if (!query) return res.json([]);
+
+//     const users = readMyUsers().filter(user =>
+//         user.username.toLowerCase().includes(query)
+//     );
+
+//     res.json(users);
+// });
+
+
+router.get("/searchmyuser", (req, res) => {
+    const users = readMyUsers();
+    res.render("myuser", { users }); 
+});
+
+
+
+
 
 module.exports = router;
