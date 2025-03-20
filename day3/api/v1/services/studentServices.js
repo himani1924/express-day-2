@@ -3,7 +3,7 @@ import pool from "../../db/index.js";
 export const getAllStudents = async()=>{
     try {
         const res = await pool.query(`select * from students`,[])
-        // console.log('query response: ', res.rows);
+        console.log('query response: ', res.rows);
         return {
             success: true, 
             data: res.rows
