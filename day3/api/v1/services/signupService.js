@@ -25,7 +25,3 @@ export const createUser = async (name, email, password) =>{
         }
     }
 }
-
-export const createGithubUser = async (profile) =>{
-    const {username, email} = profile;
-}

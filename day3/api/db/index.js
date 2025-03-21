@@ -1,5 +1,4 @@
 import pkg from 'pg';
-// import { Pool } from "pkg";
 import config from "../../config/index.js";
 import util from "util";
 import { query } from "express";
@@ -14,7 +13,6 @@ const sql_pool = new Pool({
     idleTimeoutMillis: config.idleTimeoutMillis,
     connectionTimeoutMillis: config.connectionTimeoutMillis,
 })
-// console.log('connected to db');
 
 const pool = {
     query: (sql, args) =>{

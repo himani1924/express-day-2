@@ -1,16 +1,14 @@
 import express from 'express';
-import googlepassport from '../services/passportService.js'
-import loginpassport from '../services/passportLocalService.js';
-import githubpassport from '../services/passportGithub.js';
-import { createUser } from '../services/signupServices.js';
+import passport from '../services/passportService.js'
+import { createUser } from '../services/signupService.js';
 
 const router = express.Router();
 
-router.get('/google', googlepassport.authenticate('google', 
+router.get('/google', passport.authenticate('google', 
     { scope: ['email', 'profile'] }
 ));
 
-router.get('/google/callback', googlepassport.authenticate('google',{
+router.get('/google/callback', passport.authenticate('google',{
     session: false
 }),
 async (req, res) => {
@@ -22,10 +20,10 @@ async (req, res) => {
     }
 })
 
-router.get('/github', githubpassport.authenticate('github',  { scope: ['read:user', 'user:email'] }))
+router.get('/github', passport.authenticate('github',  { scope: ['read:user', 'user:email'] }))
 
-router.get('/github/callback', githubpassport.authenticate('github',{
-    session: false
+router.get('/github/callback', passport.authenticate('github',{
+    // session: false
 }),
 async (req, res) =>{
     try {
@@ -59,9 +57,9 @@ router.get('/login', (req, res) => {
     res.render('login');
 });
 
-router.post('/login', loginpassport.authenticate('local', {
+router.post('/login', passport.authenticate('local', {
     successRedirect: '/api/v1/students',
-    failureRedirect: '/api/v1/login'
+    failureRedirect: '/api/v1/auth/login'
 }));
 
 export default router;
